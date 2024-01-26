@@ -1,0 +1,32 @@
+name: Build and Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main # Replace with your main development branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.10.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to prod url
+        # main is the branch name where new code is pushed
+        if: github.ref == 'refs/heads/main'
+        run: npx vercel --token ${{ secrets.VERCEL_TOKEN }}
+

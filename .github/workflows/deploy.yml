@@ -3,11 +3,12 @@ name: Build and Deploy to Vercel
 on:
   push:
     branches:
-      - main # Replace with your main development branch
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Adjust the timeout as needed
 
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +18,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20.10.0'
+          node-version: '20.10.0'  # Adjust the Node.js version as needed
 
       - name: Install dependencies
         run: npm install
@@ -25,8 +26,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy to prod url
-        # main is the branch name where new code is pushed
-        if: github.ref == 'refs/heads/main'
-        run: npx vercel --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Update Vercel CLI
+        run: npm install -g vercel@latest
 
+      - name: Deploy to Vercel
+        if: github.ref == 'refs/heads/main'
+        run: npx vercel --token ${{ secrets.VERCEL_TOKEN }} --confirm
